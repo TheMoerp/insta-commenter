@@ -136,7 +136,7 @@ def comment(url, comment_list):
         action.send_keys(comment)
         action.perform()
 
-        logger.debug(f"writing comment \"{comment}\" on {url}")
+        logger.debug(f"comment test \"{comment}\" on {url}")
         
         sleep_time = random.uniform(3.0, 5.0)
         sleep(sleep_time)
