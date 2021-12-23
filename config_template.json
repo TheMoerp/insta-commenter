@@ -5,6 +5,6 @@
     },
     "log_level": "debug",
     "comment_list": ["i am a bot", "this is a comment", "whats up"],
-    "post_list": ["https://www.instagram.com/p/CXr6C1FFf_s/"],
+    "post_list": ["https://www.instagram.com/p/CXr6C1FFf_s/", "https://www.instagram.com/p/CXHaVkmrH2v/"],
     "block_limit": 5
 }
