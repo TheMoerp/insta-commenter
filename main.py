@@ -22,6 +22,8 @@ def read_config():
         comment_list = config['comment_list']
         post_list = config['post_list']
         block_limit = config['block_limit']
+
+    logger.debug("configs loaded")
     
     return userdata, log_level, comment_list, post_list, block_limit
         
@@ -52,44 +54,42 @@ def login(userdata):
     base_url = "https://www.instagram.com"
     try:
         driver.get(base_url)
-        logger.debug("loading cookie file")
+        logger.debug("loading old cookies")
         cookies = pickle.load(open(COOKIE_FILE, "rb"))
         for cookie in cookies:
             driver.add_cookie(cookie)
         driver.get(base_url)
-        logger.info("cookies have been loaded")
+        logger.debug("cookies loaded ")
         
     except:
         logger.warning("could not load cookies")
-        logger.debug("trying to get new cookies")
+        logger.debug("starting new session")
         driver.get(base_url)
 
         sleep_time = random.uniform(2.0, 3.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
         sleep(sleep_time)
 
         try:
             driver.find_element_by_xpath("/html/body/div[4]/div/div/button[1]").click()
+            logger.debug("accepted cookie usage")
         except:
             pass
 
         sleep_time = random.uniform(5.0, 7.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
         sleep(sleep_time)
 
         username = driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[1]/div/label/input")
         password = driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[2]/div/label/input")
         username.send_keys(userdata['username'])
         password.send_keys(userdata['password'])
+        logger.debug("userdata entered")
 
         sleep_time = random.uniform(3.0, 5.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
         sleep(sleep_time)
 
         driver.find_element_by_xpath("/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button/div").click()
 
         sleep_time = random.uniform(3.0, 5.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
         sleep(sleep_time)
 
         try:
@@ -105,30 +105,28 @@ def login(userdata):
             pass
         
         sleep_time = random.uniform(3.0, 5.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
         sleep(sleep_time)
 
         try:
             driver.find_element_by_xpath("/html/body/div[5]/div/div/div/div[3]/button[2]").click()
         except:
             pass
-            
-        sleep_time = random.uniform(3.0, 5.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
+        
+        logger.debug("new session started successfully")
+        sleep_time = random.uniform(1.0, 2.0)
         sleep(sleep_time)
 
         pickle.dump( driver.get_cookies() , open(COOKIE_FILE,"wb"))
-        logger.info("new cookies has been saved")
+        logger.info("new cookies saved")
 
     return True
 
 
 def comment(url, comment_list):
-    logger.debug(f"starting bot on {url}")
+    logger.debug(f"starting round on {url}")
     driver.get(url)
 
     sleep_time = random.uniform(1.0, 3.0)
-    logger.debug(f"waiting {round(sleep_time, 2)}s")
     sleep(sleep_time)
 
     for i in range(5):
@@ -141,14 +139,12 @@ def comment(url, comment_list):
         logger.debug(f"writing comment \"{comment}\" on {url}")
         
         sleep_time = random.uniform(3.0, 5.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
         sleep(sleep_time)
 
         driver.find_element_by_xpath("/html/body/div[1]/section/main/div/div[1]/article/div/div[2]/div/div[2]/section[3]/div/form/button[2]").click()
         logger.debug(f"sending comment on {url}")
 
         sleep_time = 2.0
-        logger.debug(f"waiting {round(sleep_time, 2)}s to check if comment has been sent")
         sleep(sleep_time)
 
         try:
@@ -156,17 +152,17 @@ def comment(url, comment_list):
             logger.error(f"failed to send comment on {url}")
             driver.find_element_by_xpath("/html/body/div[1]/section/nav/div[2]/div/div/div[3]/div/div[6]/span/img").click()
             driver.find_element_by_xpath("/html/body/div[1]/section/nav/div[2]/div/div/div[3]/div/div[6]/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div").click()
-            logger.debug("current session has been canceled")
+            logger.debug("current session stopped")
             os.remove(COOKIE_FILE)
-            logger.debug("old cookies have been removed")
+            logger.debug("old cookies removed")
 
             return False
         except:
             pass
+
         logger.info(f"comment sent on {url}")
 
         sleep_time = random.uniform(10.0, 15.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
         sleep(sleep_time)
 
     return True
@@ -181,7 +177,7 @@ if __name__ == "__main__":
     for i in range(block_limit):
         if not login(userdata):
             sleep_time = random.uniform(600.0, 900.0)
-            logger.debug(f"waiting {round(sleep_time, 2)}s")
+            logger.debug(f"waiting {round(sleep_time, 1)}s")
             sleep(sleep_time)
             continue
 
@@ -192,9 +188,11 @@ if __name__ == "__main__":
                 break
             
             sleep_time = random.uniform(300.0, 400.0)
-            logger.debug(f"waiting {round(sleep_time, 2)}s")
+            logger.debug(f"waiting {round(sleep_time, 1)}s")
             sleep(sleep_time)
 
         sleep_time = random.uniform(400.0, 500.0)
-        logger.debug(f"waiting {round(sleep_time, 2)}s")
+        logger.debug(f"waiting {round(sleep_time, 1)}s")
         sleep(sleep_time)
+    
+    logger.critical(f"blocklimit reached")
