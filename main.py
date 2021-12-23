@@ -16,15 +16,17 @@ comment_cnt = 0
 
 
 def read_config():
-    with open('config.json') as json_file:
-        config = json.load(json_file)
-        userdata = config['userdata']
-        log_level = config['log_level']
-        comment_list = config['comment_list']
-        post_list = config['post_list']
-        block_limit = config['block_limit']
-
-    logger.debug("configs loaded")
+    try:
+        with open('config.json') as json_file:
+            config = json.load(json_file)
+            userdata = config['userdata']
+            log_level = config['log_level']
+            comment_list = config['comment_list']
+            post_list = config['post_list']
+            block_limit = config['block_limit']
+    except:
+        print("could not load configfile\n - check if config.json exists\n - check if the content matches with config_template.json")
+        exit()
     
     return userdata, log_level, comment_list, post_list, block_limit
         
