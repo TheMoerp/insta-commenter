@@ -12,6 +12,7 @@ import json
 
 COOKIE_FILE = "cookies.pkl"
 driver = webdriver.Chrome('chromedriver.exe')
+comment_cnt = 0
 
 
 def read_config():
@@ -123,6 +124,7 @@ def login(userdata):
 
 
 def comment(url, comment_list):
+    global comment_cnt
     logger.debug(f"starting round on {url}")
     driver.get(url)
 
@@ -152,15 +154,17 @@ def comment(url, comment_list):
             logger.error(f"failed to send comment on {url}")
             driver.find_element_by_xpath("/html/body/div[1]/section/nav/div[2]/div/div/div[3]/div/div[6]/span/img").click()
             driver.find_element_by_xpath("/html/body/div[1]/section/nav/div[2]/div/div/div[3]/div/div[6]/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/div").click()
-            logger.debug("current session stopped")
+            logger.debug(f"current session stopped with {comment_cnt} sent comments")
             os.remove(COOKIE_FILE)
             logger.debug("old cookies removed")
+
 
             return False
         except:
             pass
 
         logger.info(f"comment sent on {url}")
+        comment_cnt += 1
 
         sleep_time = random.uniform(10.0, 15.0)
         sleep(sleep_time)
@@ -195,4 +199,4 @@ if __name__ == "__main__":
         logger.debug(f"waiting {round(sleep_time, 1)}s")
         sleep(sleep_time)
     
-    logger.critical(f"blocklimit reached")
+    logger.critical(f"blocklimit reached with {comment_cnt} comments sent")
